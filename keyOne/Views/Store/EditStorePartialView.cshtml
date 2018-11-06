@@ -1,0 +1,60 @@
+﻿@model keyOne.ViewModels.StoreViewModel
+<div>
+    <form id="myFormEdit">
+        @Html.HiddenFor(m => m.Stores.StoreId)
+        @Html.LabelFor(model => model.Stores.StoreName)
+        @Html.TextBoxFor(s => s.Stores.StoreName, new { @class = "form-control", @placeholder = "Address", @id = "Name"})
+        <div>
+            @Html.LabelFor(model => model.Stores.StoreAddress, new { @style = "padding-top:2%" })
+            @Html.TextBoxFor(model => model.Stores.StoreAddress, new { @class = "form-control", @placeholder = "Address"})
+        </div>
+    </form>
+</div>
+
+@*<script src="~/Scripts/knockout-3.4.2.debug.js"></script>
+<script src="~/Scripts/knockout.validation.js"></script>*@
+<script>
+    $(document).ready(function () {
+        //(function ($) {
+        //    var contactInfo = {
+        //        Name: ko.observable($("#Name").val()).extend({
+        //            required: {
+        //                params: true,
+        //                message: "Please Enter The Name"
+
+        //            }, minLength: {
+        //                params: 2,
+        //                message: "Invalid Name , Please Enter Atleast 2 Letters"
+        //            }, maxLength: 50
+        //        }),
+        //        Address: ko.observable($("#Address").val()).extend({
+        //            required: {
+        //                params: true,
+        //                message: "Please Enter The Address"
+        //            }, minLength: {
+        //                params: 2,
+        //                message: "Invalid Address , Please Enter Atleast 2 Letters"
+        //            }, maxLength: 200
+        //        })
+        //    };
+
+
+        //    ko.applyBindings(contactInfo);
+        //}($))
+        $("#btnSubmitEdit").click(function () {
+            var data = $("#myFormEdit").serialize();
+            if ($("#Name").val() == "" || $("#Address").val() == "") {
+                alert("Please Enter The Info");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/Store/Index",
+                data: data,
+                success: function (response) {
+                    $("#myModal1").modal("hide");
+                    window.location.href = "/Store/Index";
+                }
+            })
+        })
+    })
+</script>

@@ -1,0 +1,43 @@
+﻿@model keyOne.ViewModels.CustomerViewModel
+
+<style>
+    .validationMessage {
+        color: red;
+    }
+</style>
+
+
+<div class="modal-body">
+    <form id="EditForm">
+        @Html.HiddenFor(c=>c.Customers.CustomerId)
+        @Html.LabelFor(m => m.Customers.CustomerName)
+        @Html.TextBoxFor(model => model.Customers.CustomerName, new { @class = "form-control", @placeholder = "Name", @data_bind = "value:Name, valueUpdate: 'keyup'" })
+        @Html.ValidationMessageFor(m => m.Customers.CustomerName, "", new { @class = "text-danger" })
+        <div>
+            @Html.LabelFor(model => model.Customers.CustomerAddress)
+            @Html.TextBoxFor(model => model.Customers.CustomerAddress, new { @class = "form-control", @placeholder = "Address", @data_bind = "value:Address, valueUpdate: 'keyup'" })
+            @Html.ValidationMessageFor(m => m.Customers.CustomerAddress, "", new { @class = "text-danger" })
+        </div>
+    </form>
+</div>
+    <script>
+        $(document).ready(function () {
+            $("#Edit").click(function () {
+                
+                var formData = $("#EditForm").serialize();
+                alert(formData);
+                $.ajax({
+                    type: "POST",
+                    url: "/Customer/Index",
+                    data: formData,
+                    success: function (response) {
+                        $("myModal1").modal("hide");
+                        window.location.href = "/Customer/Index";
+                    }
+                })
+            })
+        })
+
+        
+        
+    </script>

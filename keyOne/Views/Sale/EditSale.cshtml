@@ -1,0 +1,63 @@
+﻿@model keyOne.ViewModels.SaleViewModel
+<style>
+    .validationMessage {
+        color: red;
+    
+    }
+    .validationMessage datalist{
+        color:red;
+    }
+</style>
+<div>
+    <form id="myFormEdit">
+        @Html.HiddenFor(m => m.Sales.SaleId)
+        <div>
+            
+            @Html.DropDownListFor(model => model.Sales.CustomerId, ViewBag.CustomerList as SelectList, "Select Customer", new { @class = "form-control", @id = "Customer" })
+        </div>
+        <div>
+            @Html.DropDownListFor(model => model.Sales.ProductId, ViewBag.ProductList as SelectList, "Select Product", new { @class = "form-control", @id = "Product", @data_bind = "value:Product" })
+        </div>
+        <div>
+            @Html.DropDownListFor(model => model.Sales.StoreId, ViewBag.StoreList as SelectList, "Select Store", new { @class = "form-control", @id = "Store", @data_bind = "value:Store" })
+        </div>
+        <div>
+            @Html.TextBoxFor(model => model.Sales.DateSold, new { @class = "form-control", @id = "Date", @data_bind = "value:Date, valueUpdate: 'keyup'" })
+        </div>
+        @*@Html.EditorFor(model => model.Sales.DateSold, new { @class = "form-control", @placeholder = "Date in dd/mm/yyyy format", @id = "Date" })*@
+
+    </form>
+</div>
+
+
+<script src="~/Scripts/knockout-3.4.2.debug.js"></script>
+<script src="~/Scripts/knockout.validation.js"></script>
+<script>
+    $(document).ready(function () {
+        (function ($) {
+            alert("oop");
+            var contactInfo = {
+                Customer: ko.observable($("#Customer")).extend({ required: true }),
+                Product: ko.observable($("#Product")).extend({ required: true }),
+                Store: ko.observable($("#Store")).extend({ required: true }),
+                Date: ko.observable($("#Date").val()).extend({ required: true })
+            };
+            ko.applyBindings(contactInfo);
+        }($))
+    })
+       $("#btnSubmitEdit").click(function () {
+            var data = $("#myFormEdit").serialize();
+            $.ajax({
+                type: "POST",
+                url: "/Sale/Index",
+                data: data,
+                success: function (response) {
+                    $("#myModal1").modal("hide");
+                    window.location.href = "/Sale/Index";
+                } 
+           })
+    })
+
+</script>
+
+

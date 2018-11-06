@@ -1,0 +1,234 @@
+﻿@model keyOne.ViewModels.StoreViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<style>
+    .ValidationMessage {
+        color: red;
+    }
+</style>
+
+<h2>Store</h2>
+
+<script src="~/Scripts/jquery-1.12.4.min.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+
+<div class="container">
+    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add New Store</a>
+    <div>
+        <div class="modal fade" id="myModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <a href="#" class="close" data-dismiss="modal">&times;</a>
+                        <h3 class="modal-title">Store Details</h3>
+                    </div>
+                    <div class="modal-body">
+                        <form id="myForm">
+                            @Html.LabelFor(m => m.Stores.StoreName)
+                            @Html.TextBoxFor(model => model.Stores.StoreName, new { @class = "form-control", @placeholder = "Name" })
+                            @Html.ValidationMessageFor(m => m.Stores.StoreName, "", new { @class = "text-danger" })
+                            <div>
+                                @Html.LabelFor(model => model.Stores.StoreAddress)
+                                @Html.TextBoxFor(model => model.Stores.StoreAddress, new { @class = "form-control", @placeholder = "Address" })
+                                @Html.ValidationMessageFor(m => m.Stores.StoreAddress, "", new { @class = "text-danger" })
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="reset" value="Save" class="btn btn-default" id="btnSubmit" />
+                        <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (!Model.StoreList.Any())
+    {
+        <p style="margin: auto;width: 50%;padding: 10px;">There are No Customers Yet!!</p>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.Label("Name")
+                    </th>
+                    <th>
+                        @Html.Label("Address")
+                    </th>
+                    <th>@Html.Label("Action(Edit)")</th>
+                    <th>@Html.Label("Action(Delete)")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.StoreList)
+                {
+                    <tr id="row_@item.StoreId">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StoreName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StoreAddress)
+                        </td>
+                        <td><a href="#" class="btn btn-warning" onclick="EditStore(@item.StoreId)"><i class="glyphicon glyphicon-edit"> Edit</i> </a> </td>
+                        <td><a href="#" class="btn btn-danger" onclick="ConfirmDelete(@item.StoreId)"><i class="glyphicon glyphicon-trash"> Delete</i> </a> </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <div class="modal fade" id="myModalDelete">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h3 class="modal-title">Delete Store</h3>
+                </div>
+                <div class="modal-body" id="myBodyDiv">
+                    <h4>Are you sure ? You want to delete this. </h4>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+                    <a href="#" class="btn btn-success" onclick="DeleteStore()">Confirm</a>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="hiddenStoreId" />
+    </div>
+    <div class="modal fade" id="myModal1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="#" class="close" data-dismiss="modal">&times;</a>
+                    <h3 class="modal-title">Store Details</h3>
+                </div>
+                <div class="modal-body" id="myModalBodyDiv1">
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+                    <input type="reset" value="Save" class="btn btn-default" id="btnSubmitEdit" />
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+<script src="~/Scripts/knockout-3.4.2.debug.js"></script>
+<script src="~/Scripts/knockout.validation.js"></script>
+<script>
+    $(document).ready(function () {
+        
+
+        $("#btnSubmit").click(function () {
+            var data = $("#myForm").serialize();
+            if (!$("#myForm").valid()) {
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "/Store/Index",
+                success: function (response) {
+                    $("#myModal").modal("hide");
+                    window.location.href = "/Store/Index";
+                }
+
+            })
+        })
+    })
+    var ConfirmDelete = function (storeId) {
+        $("#hiddenStoreId").val(storeId);
+        $("#myModalDelete").modal('show');
+    }
+    var DeleteStore = function () {
+        var sId = $("#hiddenStoreId").val();
+        $.ajax({
+            type: "POST",
+            url: "/Store/DeleteStore",
+            data: { storeId: sId },
+            success: function (result) {
+                $("#myModalDelete").modal("hide");
+                $("#row_" + sId).remove();
+            }
+        })
+    }
+    var EditStore = function (storeId) {
+        alert("alert");
+        var url = "/Store/EditStore?storeId=" + storeId;
+        $("#myModalBodyDiv1").load(url, function () {
+            $("#myModal1").modal("show");
+        })
+    }
+    
+
+    //$(document).ready(function () {
+    //    (function ($) {
+    //        var contactInfo = {
+    //            Name: ko.observable($("#Name").val()).extend({
+    //                required: {
+    //                    params: true,
+    //                    message: "Please Enter The Name"
+    //                }, minLength: {
+    //                    params: 2,
+    //                    message: "Invalid Name , Please Enter Atleast 2 Letters"
+    //                }, maxLength: 50
+    //            }),
+    //            Address: ko.observable($("#Address").val()).extend({
+    //                required: {
+    //                    params: true,
+    //                    message: "Please Enter The Address"
+    //                }, minLength: {
+    //                    params: 2,
+    //                    message: "Invalid Address , Please Enter Atleast 2 Letters"
+    //                }, maxLength: 200
+    //            })
+    //        };
+    //        ko.applyBindings(contactInfo);
+    //    }($))
+    //    $("#btnSubmit").click(function () {
+
+    //        var data = $("#myForm").serialize();
+    //        alert("Hello1");
+    //        $.ajax({
+    //            type: "POST",
+    //            url: "/Store/Index",
+    //            data: data,
+    //            success: function (response) {
+    //                $("#myModal").modal("hide");
+    //                window.location.href = "/Store/Index";
+    //            }
+    //        })
+    //    })
+    //})
+    //var ConfirmDelete = function (storeId) {
+    //    $("#hiddenStoreId").val(storeId);
+    //    $("#myModalDelete").modal('show');
+    //}
+    //var DeleteStore = function () {
+    //    var sId = $("#hiddenStoreId").val();
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Store/DeleteStore",
+    //        data: { storeId: sId },
+    //        success: function (result) {
+    //            $("#myModalDelete").modal("hide");
+    //            $("#row_" + sId).remove();
+    //        }
+    //    })
+    //})
+    //var EditStore = function (storeId) {
+    //    var url = "/Store/EditStore?storeId=" + storeId;
+    //    $("#myModalBodyDiv1").load(url, function () {
+    //        $("#myModal1").modal("show");
+    //    })
+    //}
+</script>

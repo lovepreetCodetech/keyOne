@@ -1,0 +1,62 @@
+﻿
+@model keyOne.ViewModels.ProductViewModel
+<div>
+    <form id="myFormEdit">
+        @Html.HiddenFor(m => m.Products.ProcductId)
+        @Html.LabelFor(model => model.Products.ProcductName)
+        @Html.TextBoxFor(model => model.Products.ProcductName, new { @class = "form-control", @placeholder = "Name", @data_bind = "value:Name, valueUpdate: 'keyup'" ,@id = "Name" })
+        <div>
+            @Html.LabelFor(model => model.Products.ProcductPrice, new { @style = "padding-top:2%" })
+            @Html.TextBoxFor(model => model.Products.ProcductPrice, new { @class = "form-control", @placeholder = "Price"})
+        </div>
+    </form>
+</div>
+
+<script src="~/Scripts/knockout-3.4.2.debug.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
+<script>
+    $(document).ready(function () {
+        (function ($) {
+            var contactInfo = {
+                Name: ko.observable($("#Name").val()).extend({
+                    required: {
+                        params: true,
+                        message: "Please Enter The Name"
+
+                    }, minLength: {
+                        params: 2,
+                        message: "Invalid Name , Please Enter Atleast 2 Letters"
+                    }, maxLength: 50
+                })
+                //    Address: ko.observable($("#Address").val()).extend({
+                //        required: {
+                //            params: true,
+                //            message: "Please Enter The Address"
+                //        }, minLength: {
+                //            params: 2,
+                //            message: "Invalid Address , Please Enter Atleast 2 Letters"
+                //        }, maxLength: 200
+                //    })
+                //};
+            };
+
+            ko.applyBindings(contactInfo);
+            }($))
+
+        $("#btnSubmitEdit").click(function () {
+            var data = $("#myFormEdit").serialize();
+            if ($("#Name").val() == "" || $("#Price").val() == "") {
+                alert("Please Enter The Info");
+            }
+            $.ajax({
+                type: "POST",
+                url: "/Products/Index",
+                data: data,
+                success: function (response) {
+                    $("#myModal1").modal("hide");
+                    window.location.href = "/Products/Index";
+                }
+            })
+        })
+    })
+</script>
